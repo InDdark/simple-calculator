@@ -1,0 +1,2 @@
+# simple-calculator
+Input Details:
