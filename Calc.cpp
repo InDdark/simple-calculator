@@ -1,0 +1,91 @@
+#include <iostream>
+#include "Calc.h"
+#include "stddef.h"
+#include <cmath>
+
+Calc::Calc(int values):storedExpressions (new std::string[values]),stored(0){
+}
+
+Calc::Calc(const Calc &rhs) {
+    std::cout<<"copy constructor is called\n";
+	if(storedExpressions !=nullptr){
+            std::cout<<"copy constructor was not null\n";
+		storedExpressions=new std::string[rhs.stored];
+	}
+}
+
+Calc::~Calc() {
+    std::cout<<"\nDestructor is called\n";
+	delete[] storedExpressions;
+	storedExpressions=nullptr;
+	stored=0;
+}
+
+const Calc &Calc::operator=(const Calc &rhs) {
+    std::cout<<"\nAssignment operator is called\n";
+	if(this!=&rhs){
+            std::cout<<"Were not equal\n";
+		Calc temp(rhs);
+		std::swap(storedExpressions,temp.storedExpressions);
+		std::swap(stored,temp.stored);
+	}
+	return *this;
+}
+
+double Calc::process(std::string userInput, double prevValue) {
+    //First cleanse
+    std::string cleansedString = "";
+    for(size_t i = 0; i < userInput.size(); ++i) {
+        if (userInput[i] == '=' || userInput[i] == ' ' || userInput[i] == '(' || userInput[i] == ')') {
+        } else {
+            cleansedString += userInput[i];
+        }
+    }
+    double value=std::stod(cleansedString.substr(1,cleansedString.length()-1));
+    if(cleansedString[0]=='^'){
+    	return pow(prevValue,value);
+	}
+    else if(cleansedString[0]=='*' || cleansedString[0]=='/'){
+    	if(cleansedString[0]=='*'){
+    		return prevValue * value;
+		}
+		else{
+			if(value==0){
+				std::exit(0);
+			}
+			else{
+				return prevValue /value;
+			}
+		}
+	}
+
+	else if(cleansedString[0]=='+' || cleansedString[0]=='-'){
+    	if(cleansedString[0]=='+'){
+    		return prevValue + value;
+		}
+		else{
+				return prevValue-value;
+		}
+	}
+	else{
+		std::cout<<"Error:Must start with operator"<<std::endl;
+	}
+
+}
+
+void Calc::print() {
+    std::cout << "You have " << stored << " expressions stored: ";
+    for(size_t i = 0; i < stored; ++i){
+        std::cout << "Expression " << i + 1 << ":\n";
+        std::cout << storedExpressions[i] << std::endl;
+    }
+}
+
+
+void Calc::setStored(size_t newStored) {
+    stored = newStored;
+}
+
+size_t Calc::getStored() {
+    return stored;
+}
